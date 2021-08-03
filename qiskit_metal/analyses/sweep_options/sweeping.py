@@ -21,6 +21,8 @@ from qiskit_metal import Dict
 # QHFSSRenderer used to describe types in arguments.
 from qiskit_metal.renderers.renderer_ansys.hfss_renderer import QHFSSRenderer
 
+# Use the updated user interface for access to simulation apps.
+
 
 class Sweeping():
     """The methods allow users to sweep a variable in a components's options.
@@ -34,6 +36,17 @@ class Sweeping():
             design (QDesign): Used to access the QRenderers.
         """
         self.design = design
+
+    def available_analysis_renderer(self) -> list:
+        """Let user know which renderers are available for analysis. The list
+        will not contain GDS since that renderer will not execute analysis.
+
+        Returns:
+            list: List of names of renderers that could execute analysis.
+        """
+        all_renderers = self.design._renderers.keys
+        #Since GDS renderer is not used for Analysis, remove it.
+        return all_renderers.remvoe('GDS')
 
     @classmethod
     def option_value(cls, a_dict: Dict, search: str) -> str:
