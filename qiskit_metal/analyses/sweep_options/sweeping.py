@@ -44,9 +44,12 @@ class Sweeping():
         Returns:
             list: List of names of renderers that could execute analysis.
         """
-        all_renderers = self.design._renderers.keys
+        available_analysis = list(self.design._renderers.keys())
         #Since GDS renderer is not used for Analysis, remove it.
-        return all_renderers.remvoe('GDS')
+        if 'gds' in available_analysis:
+            available_analysis.remove('gds')
+
+        return available_analysis
 
     @classmethod
     def option_value(cls, a_dict: Dict, search: str) -> str:
