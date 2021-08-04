@@ -887,6 +887,20 @@ class QDesign():
 
 ######### Renderers ###############################################################
 
+    def available_analysis_renderer(self) -> list:
+        """Let user know which renderers are available for analysis. The list
+        will not contain GDS since that renderer will not execute analysis.
+
+        Returns:
+            list: List of names of renderers that could execute analysis.
+        """
+        available_analysis = list(self._renderers.keys())
+        #Since GDS renderer is not used for Analysis, remove it.
+        if 'gds' in available_analysis:
+            available_analysis.remove('gds')
+
+        return available_analysis
+
     def _start_renderers(self):
         """Start the renderers.
 

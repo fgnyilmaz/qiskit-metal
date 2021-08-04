@@ -20,6 +20,7 @@ from qiskit_metal import Dict
 # pylint: disable=unused-import
 # QHFSSRenderer used to describe types in arguments.
 from qiskit_metal.renderers.renderer_ansys.hfss_renderer import QHFSSRenderer
+from qiskit_metal.analyses.quantization import LOManalysis
 
 # Use the updated user interface for access to simulation apps.
 
@@ -37,19 +38,13 @@ class Sweeping():
         """
         self.design = design
 
-    def available_analysis_renderer(self) -> list:
-        """Let user know which renderers are available for analysis. The list
-        will not contain GDS since that renderer will not execute analysis.
+    def get_registered_simulators(self) -> list:
+        """Get the list of renderers registered to Metal with gds removed. 
 
         Returns:
-            list: List of names of renderers that could execute analysis.
+            list: Items are names (string) of simulation renderers registered to Metal. 
         """
-        available_analysis = list(self.design._renderers.keys())
-        #Since GDS renderer is not used for Analysis, remove it.
-        if 'gds' in available_analysis:
-            available_analysis.remove('gds')
-
-        return available_analysis
+        return self.design.available_analysis_renderer()
 
     @classmethod
     def option_value(cls, a_dict: Dict, search: str) -> str:
@@ -1033,7 +1028,8 @@ class Sweeping():
             endcaps_render: list,
             setup_args: Dict = None,
             leave_last_design: bool = True,
-            design_name: str = "Sweep_Capacitance") -> Tuple[Dict, int]:
+            design_name: str = "Sweep_Capacitance",
+            simulation='q3d') -> Tuple[Dict, int]:
         """Ansys must be open with an inserted project.  A design,
         "Q3D Extractor Design", will be inserted by this method.
 
@@ -1051,6 +1047,7 @@ class Sweeping():
             leave_last_design (bool) : In Q3d, after the last sweep, should
                         the design be cleared?
             design_name(str): Name of q3d_design to use in project.
+            simulation(str): The renderer that is registered in Metal to get simulation information.
 
         Returns:
             Dict or int: If dict, the key is each value of option_sweep, the
@@ -1074,20 +1071,24 @@ class Sweeping():
 
         #Dict of all swept information.
         all_sweep = Dict()
+
+        #When a new renderer is registered to Metal, may need to update this.
         option_path, a_value, check_result = self.error_check_sweep_input(
             qcomp_name, option_name, option_sweep)
         if check_result != 0:
             return all_sweep, check_result
 
-        a_q3d = self.design.renderers.q3d
+        c1 = LOManalysis(self.design, simulation)
+
+        #a_q3d = self.design.renderers.q3d
         # Assume Ansys is open, with a project open.
-        a_q3d.connect_ansys()
+        #a_q3d.connect_ansys()
         a_q3d.activate_ansys_design(design_name, 'capacitive')
 
         a_q3d.clean_active_design()
 
         # Add a solution setup.
-        if self.prep_q3d_setup(setup_args) != 0:
+        if self.prep_q3d_setup(c1, setup_args) != 0:
             self.design.logger.warning('The setup was not implemented, '
                                        'please look at warning messages.')
             return all_sweep, 8
