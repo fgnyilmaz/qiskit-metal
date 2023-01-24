@@ -60,7 +60,7 @@ class TransmonPocketCL(TransmonPocket):  # pylint: disable=invalid-name
         transmon_pocket_cl.png
 
     .. meta::
-        Transmon Pocket Connector Lines
+        Transmon Pocket Charge Line
 
     BaseQubit Default Options:
         * connection_pads: empty Dict -- The dictionary which contains all active connection lines for the qubit.
@@ -142,7 +142,7 @@ class TransmonPocketCL(TransmonPocket):  # pylint: disable=invalid-name
 
         cl_arm = draw.box(0, 0, -p.cl_width, p.cl_length)
         cl_cpw = draw.box(0, 0, -8 * p.cl_width, p.cl_width)
-        cl_metal = draw.cascaded_union([cl_arm, cl_cpw])
+        cl_metal = draw.unary_union([cl_arm, cl_cpw])
 
         cl_etcher = draw.buffer(cl_metal, p.cl_gap)
 

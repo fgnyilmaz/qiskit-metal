@@ -29,6 +29,7 @@ import shapely
 import shapely.affinity
 import shapely.wkt
 from shapely.geometry import CAP_STYLE, JOIN_STYLE, Point, Polygon
+from shapely.geometry.multipolygon import MultiPolygon
 
 from .. import config, logger
 from .. import is_component
@@ -74,7 +75,7 @@ def is_rectangle(obj):
     """Test if a shapely object is a rectangle.
 
     If there are 4 ext cooridnate then
-    check if consequtive vectors are orhtogonal.
+    check if consecutive vectors are orthogonal.
     Assumes that the last point is not repeating.
 
     Args:
@@ -225,6 +226,18 @@ def _iter_func_geom_(func, objs, *args, overwrite=False, **kwargs):
                                              overwrite=overwrite,
                                              **kwargs)
             return objs
+        # Under Shapely 1.8, MultiPolygon objects need to be
+        # referenced with the .geoms property. This function
+        # did inadvertently take MultiPolygon objects so
+        # another case was added to handle this.
+        elif isinstance(objs, MultiPolygon):
+            return type(objs)([
+                _iter_func_geom_(func,
+                                 val,
+                                 *args,
+                                 overwrite=overwrite,
+                                 **kwargs) for val in objs.geoms
+            ])
         else:
             return type(objs)([
                 _iter_func_geom_(func,
