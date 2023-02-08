@@ -1,9 +1,0 @@
-28.06.2022
-
-Creating TWINS sample
-
-- cheesing setting arranged for pos_x, pos_y = 0,0
-Fot this design should be (5,0)
-Could not find any position option in GDS library maybe design library will be helpfull.
-
-Try to figure out how to calculate opentoground position with codes. Not by hand. Needs to calculate whatever TL line position is.
