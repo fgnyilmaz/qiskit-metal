@@ -101,13 +101,14 @@ class Tmon(BaseQubit):
     default_options = Dict(
         chip='main',
         inductor_width='10um',
-        jj_gap='30um',
-        pad_head_width='40um',
+        jj_gap='40um',
+        pad_head_width='15um',
         pad_head_length='400um',
-        pad_arm_width='80um',
-        pad_arm_length='1000um',
-        palm_radius='80um',
-        pad_gap='80um',
+        pad_arm_width='15um',
+        pad_arm_length='1400um',
+        palm_radius='25um',
+        pad_gap='100um',
+        pad_armgap='5um',
         # 90 has dipole aligned along the +X axis,
         # while 0 has dipole aligned along the +Y axis
         orientation='0',
@@ -151,6 +152,7 @@ class Tmon(BaseQubit):
         pad_arm_length = p.pad_arm_length
         palm_radius = p.palm_radius
         pad_gap = p.pad_gap
+        pad_armgap = p.pad_armgap
         
         # Draw 'the arms', the capacitance. 
         pad_north = draw.rectangle(pad_head_width, pad_head_length, 0, pad_head_length/2) # pad_head drawned and define as pad_north
@@ -161,9 +163,9 @@ class Tmon(BaseQubit):
         # we union all the capacitance as 't' shape
         tmon = draw.union(pad_north, pad_equator, pad_palm_left, pad_palm_right)
 
-        # grounded tmon needs to have gap around it
+        # The gap around it
         pad_gap_north = draw.rectangle(pad_head_width+2*pad_gap, pad_head_length+2*jj_gap, 0, pad_head_length/2)
-        pad_gap_equator = draw.rectangle(pad_arm_length+2*pad_gap, pad_arm_width+pad_gap*2, 0, 0)
+        pad_gap_equator = draw.rectangle(pad_arm_length+2*pad_armgap, pad_arm_width+pad_gap*2, 0, 0)
         pad_palm_gap_left = draw.Point(-pad_arm_length/2, 0).buffer(palm_radius*1.5)
         pad_palm_gap_right = draw.Point(pad_arm_length/2, 0).buffer(palm_radius*1.5)
         # again we union all the gap part as one and called pad_etch. Will be etched away during fab
@@ -220,14 +222,12 @@ class Tmon(BaseQubit):
         flux_bias_cpwline = draw.rectangle(cpw_width, fbl_height, 0, p.pad_head_length+fbl_sep+fbl_height)
         flux_bias_line = draw.union(flux_bias_pad, flux_bias_cpwline)
  
- #       flux_bias_line = draw.union(flux_bias_lineup, flux_bias_linemid,  flux_bias_linebot, circle_top, circle_bot)
-
         # Flux Bias line's gap part, inside the GND
         flux_bias_pad_gap = draw.Polygon([
              (-fbl_width*2, p.pad_head_length+fbl_sep-cpw_gap*2),   # point k
              (fbl_width*2, p.pad_head_length+fbl_sep-cpw_gap*2),    # point l
-             (cpw_gap*4, p.pad_head_length+fbl_sep+fbl_height),   # point m
-             (-cpw_gap*4, p.pad_head_length+fbl_sep+fbl_height),   # point n
+             (cpw_gap*2, p.pad_head_length+fbl_sep+fbl_height),   # point m
+             (-cpw_gap*2, p.pad_head_length+fbl_sep+fbl_height),   # point n
         ])
         flux_bias_cpwline_gap = draw.rectangle(cpw_width+cpw_gap*4, fbl_height, 0, p.pad_head_length+fbl_sep+fbl_height)
         flux_bias_line_gap = draw.union(flux_bias_pad_gap, flux_bias_cpwline_gap)
