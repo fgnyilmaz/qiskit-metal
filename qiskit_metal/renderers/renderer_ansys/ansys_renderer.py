@@ -121,8 +121,8 @@ class QAnsysRenderer(QRendererAnalysis):
     # yapf: disable
     default_options = Dict(
         Lj='10nH',  # Lj has units of nanoHenries (nH)
-        Cj=0,  # Cj *must* be 0 for pyEPR analysis! Cj has units of femtofarads (fF)
-        _Rj=0,  # _Rj *must* be 0 for pyEPR analysis! _Rj has units of Ohms
+        Cj=0,  # Cj has units of femtofarads (fF)
+        _Rj=0,  # _Rj has units of Ohms
         max_mesh_length_jj='7um',  # maximum mesh length for Josephson junction elements
         max_mesh_length_port='7um', # maximum mesh length for Ports in Eigenmode Simulations
         project_path=None,  # default project path; if None --> get active
